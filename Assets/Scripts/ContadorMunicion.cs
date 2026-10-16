@@ -1,53 +1,63 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
-using JetBrains.Annotations;
-using UnityEditor.ShaderGraph;
 
 public class ContadorMunicion : MonoBehaviour
 {
- public int capacidadCargador = 20;
- public int municionActual = 10;
- public int municionReserva = 50;
+    public int capacidadCargador = 20;
+    public int municionActual = 10;
+    public int municionReserva = 50;
 
- public InputActionAsset inputActionAsset;
- private InputActionMap _inputActionMap;
- private InputAction _fire;
- private InputAction _reload;
+    public InputActionAsset inputActionAsset;
+    private InputActionMap _inputActionMap;
+    private InputAction _fire;
+    private InputAction _reload;
 
- public TextMeshProUGUI municionesText;
+    public TextMeshProUGUI municionesText;
 
- void Start()
+    void Start()
     {
         _inputActionMap = inputActionAsset.FindActionMap("Player");
-        _fire = _inputActionMap.FindAction("Jump");
+        _fire = _inputActionMap.FindAction("Attack");
         _reload = _inputActionMap.FindAction("Crouch");
+
+        _fire.Enable();
+     _reload.Enable();
+
+        ActualizarTexto();
     }
 
- void Update()
+    void Update()
     {
-        if(_fire.triggered && municionActual > 0)
+        if (_fire.triggered && municionActual > 0)
         {
             municionActual--;
-            municionesText.text = municionActual.ToString() + "/20";
+            ActualizarTexto();
         }
 
-        if (_reload.triggered && municionReserva > 0)
+        if (_reload.triggered && municionActual < capacidadCargador && municionReserva > 0)
         {
-            municionReserva = municionReserva - (capacidadCargador-municionActual);
-            municionActual = capacidadCargador;
-            municionesText.text = municionActual.ToString() + "/20";
-            municionesText.color = Color.black;
+            int diferencia = capacidadCargador - municionActual;
+            int recarga = Mathf.Min(diferencia, municionReserva);
+
+            municionActual += recarga;
+            municionReserva -= recarga;
+
+            ActualizarTexto();
         }
 
-        if(municionActual == 0)
+        if (municionActual == 0)
         {
             municionesText.color = Color.red;
+        }
+        else
+        {
+            municionesText.color = Color.black;
         }
     }
 
     public void ActualizarTexto()
     {
-        
+        municionesText.text = municionActual + "/" + capacidadCargador;
     }
 }
