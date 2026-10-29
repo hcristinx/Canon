@@ -13,6 +13,9 @@ public class BulletCtrl : MonoBehaviour
         rb.collisionDetectionMode =
             CollisionDetectionMode.ContinuousDynamic;
 
+        // Sin gravedad para que siga recta la línea de la pistola
+        rb.useGravity = false;
+
         rb.AddForce(transform.forward * 500f);
     }
 
@@ -28,27 +31,16 @@ public class BulletCtrl : MonoBehaviour
 
         Debug.Log("La bala chocó con: " + collision.gameObject.name);
 
-        // Buscar el enemigo en el objeto impactado o en sus padres.
-        EnemyCtrl enemigo =
-    collision.gameObject.GetComponentInParent<EnemyCtrl>();
+        Debug.Log("Ruta del objeto: " +
+            GetRutaJerarquia(collision.transform));
 
-Debug.Log("Objeto impactado: " + collision.gameObject.name);
+        // Si la bala impacta a un objeto con tag Enemy, se elimina
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Enemigo eliminado: " + collision.gameObject.name);
 
-Debug.Log("Ruta del objeto: " +
-    GetRutaJerarquia(collision.transform));
-
-if (enemigo != null)
-{
-    Debug.Log("EnemyCtrl encontrado en: " + enemigo.gameObject.name);
-
-    Destroy(enemigo.gameObject);
-}
-else
-{
-    Debug.LogWarning(
-        "No se encontró EnemyCtrl en la jerarquía del objeto impactado."
-    );
-}
+            Destroy(collision.gameObject);
+        }
 
         // Destruir la bala.
         Destroy(gameObject);

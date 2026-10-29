@@ -29,12 +29,6 @@ public class ContadorMunicion : MonoBehaviour
 
     void Update()
     {
-        if (_fire.triggered && municionActual > 0)
-        {
-            municionActual--;
-            ActualizarTexto();
-        }
-
         if (_reload.triggered && municionActual < capacidadCargador && municionReserva > 0)
         {
             int diferencia = capacidadCargador - municionActual;
@@ -54,6 +48,19 @@ public class ContadorMunicion : MonoBehaviour
         {
             municionesText.color = Color.black;
         }
+    }
+
+    // La llama el arma al disparar. Regresa false si ya no hay balas.
+    public bool GastarBala()
+    {
+        if (municionActual <= 0)
+        {
+            return false;
+        }
+
+        municionActual--;
+        ActualizarTexto();
+        return true;
     }
 
     public void ActualizarTexto()
